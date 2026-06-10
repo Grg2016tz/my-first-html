@@ -1,0 +1,1039 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>家庭保障智能分析 | 免费梳理全家保障</title>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background:#f5f7fa; color:#333; min-height:100vh; }
+
+.header { background: linear-gradient(135deg, #1A3A6B 0%, #2D5AA0 100%); color:#fff; padding:18px 20px; text-align:center; }
+.header .brand { font-size:11px; opacity:0.7; letter-spacing:1px; margin-bottom:4px; }
+.header h1 { font-size:20px; font-weight:700; }
+.header p { font-size:12px; opacity:0.8; margin-top:4px; }
+
+.progress-wrap { background:#fff; padding:12px 16px 0; }
+.progress-bar { background:#e8e8e8; height:4px; width:100%; border-radius:2px; }
+.progress-fill { background:linear-gradient(90deg, #FF6600, #FF9933); height:100%; border-radius:2px; transition:width 0.4s ease; }
+.progress-text { text-align:center; font-size:11px; color:#999; padding:8px 0 4px; }
+
+.steps-container { padding:16px; padding-bottom:80px; }
+.step { display:none; }
+.step.active { display:block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+.stage-toast { position:fixed; top:70px; left:50%; transform:translateX(-50%); background:#1A3A6B; color:#fff; padding:12px 22px; border-radius:24px; font-size:13px; font-weight:500; z-index:9999; box-shadow:0 4px 16px rgba(26,58,107,0.3); white-space:nowrap; transition:opacity 0.4s, transform 0.4s; pointer-events:none; opacity:0; }
+.stage-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.compliance-box { background:#fff; border-radius:14px; padding:18px; margin:0 16px 0; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.compliance-box label { display:flex; align-items:flex-start; gap:10px; cursor:pointer; }
+.compliance-box .ck-input { width:20px; height:20px; margin-top:2px; accent-color:#FF6600; flex-shrink:0; }
+.compliance-box .ck-text { font-size:12px; color:#666; line-height:1.6; }
+.compliance-box .ck-text a { color:#1A3A6B; text-decoration:underline; }
+
+.q-card { background:#fff; border-radius:14px; padding:20px; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.q-title { font-size:17px; font-weight:700; margin-bottom:14px; color:#1A3A6B; display:flex; align-items:center; }
+.q-num { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; background:#FF6600; color:#fff; border-radius:50%; font-size:12px; margin-right:8px; flex-shrink:0; }
+.q-subtitle { font-size:12px; color:#888; margin-bottom:14px; margin-top:-8px; padding-left:32px; }
+.multi-hint { font-size:13px; color:#666; margin-bottom:14px; }
+
+.options { display:flex; flex-direction:column; gap:8px; }
+.option-btn { padding:13px 16px; border:2px solid #e8e8e8; border-radius:10px; font-size:15px; cursor:pointer; transition:all 0.2s; -webkit-tap-highlight-color:transparent; }
+.option-btn.selected { border-color:#FF6600; background:#FFF7F0; color:#FF6600; font-weight:600; }
+.option-btn:active { transform:scale(0.98); }
+.check-icon { display:none; }
+.option-btn.selected .check-icon { display:inline; }
+
+.member-section { margin-bottom:18px; }
+.member-label { font-size:14px; font-weight:600; margin-bottom:10px; color:#333; display:flex; align-items:center; }
+.member-icon { margin-right:5px; }
+
+.member-checks { display:flex; flex-direction:column; gap:4px; }
+.check-option { display:flex; align-items:center; padding:10px 12px; border:1px solid #e8e8e8; border-radius:8px; cursor:pointer; transition:all 0.2s; -webkit-tap-highlight-color:transparent; }
+.check-option.checked { border-color:#FF6600; background:#FFF7F0; }
+.ck-box { width:20px; height:20px; border:2px solid #d0d0d0; border-radius:4px; margin-right:10px; flex-shrink:0; transition:all 0.2s; display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; }
+.check-option.checked .ck-box { border-color:#FF6600; background:#FF6600; }
+.ck-text { font-size:13px; color:#333; }
+
+.top3-option { display:flex; align-items:flex-start; padding:14px; border:1px solid #e8e8e8; border-radius:10px; margin-bottom:8px; cursor:pointer; transition:all 0.2s; -webkit-tap-highlight-color:transparent; }
+.top3-option.selected { border-color:#FF6600; background:#FFF7F0; }
+.top3-option .t3-circle { width:22px; height:22px; border:2px solid #d0d0d0; border-radius:50%; margin-right:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#999; transition:all 0.2s; }
+.top3-option.selected .t3-circle { border-color:#FF6600; background:#FF6600; color:#fff; }
+.top3-option .t3-content { flex:1; }
+.top3-option .t3-title { font-size:14px; font-weight:500; }
+.top3-option .t3-desc { font-size:12px; color:#999; margin-top:3px; line-height:1.4; }
+.top3-hint { font-size:12px; color:#FF6600; text-align:center; margin-top:8px; }
+
+.input-group { margin-bottom:14px; }
+.input-group label { display:block; font-size:13px; font-weight:500; margin-bottom:6px; color:#555; }
+.input-group input { width:100%; padding:12px 14px; border:2px solid #e8e8e8; border-radius:8px; font-size:15px; outline:none; transition:border-color 0.2s; }
+.input-group input:focus { border-color:#FF6600; }
+.optional-tag { font-size:11px; color:#999; font-weight:400; }
+
+.voluntary-section { background:#f8f9fa; border-radius:10px; padding:16px; margin-top:16px; }
+.voluntary-section .vol-title { font-size:13px; font-weight:600; color:#888; margin-bottom:10px; }
+.voluntary-section .vol-hint { font-size:11px; color:#aaa; margin-bottom:12px; line-height:1.5; }
+.contact-choice { display:flex; gap:8px; margin-top:12px; }
+.contact-choice .choice-btn { flex:1; padding:12px 8px; border:2px solid #e8e8e8; border-radius:8px; text-align:center; cursor:pointer; font-size:13px; transition:all 0.2s; line-height:1.4; }
+.contact-choice .choice-btn.selected { border-color:#FF6600; background:#FFF7F0; color:#FF6600; font-weight:600; }
+
+/* Skip button - no pressure exit */
+.skip-section { background:#fff; border-radius:10px; padding:16px; margin-top:12px; border:1px dashed #d0d0d0; }
+.skip-section .skip-hint { font-size:12px; color:#888; margin-bottom:10px; }
+.skip-btn { width:100%; padding:12px; background:#f8f9fa; border:1px solid #e8e8e8; border-radius:8px; font-size:14px; color:#666; cursor:pointer; transition:all 0.2s; }
+.skip-btn:active { background:#f0f0f0; }
+.skip-note { font-size:11px; color:#aaa; text-align:center; margin-top:8px; }
+
+.bottom-bar { position:fixed; bottom:0; left:0; right:0; background:#fff; padding:12px 16px; box-shadow:0 -2px 10px rgba(0,0,0,0.08); display:flex; gap:10px; z-index:100; }
+.btn { flex:1; padding:14px; border:none; border-radius:10px; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.2s; -webkit-tap-highlight-color:transparent; }
+.btn:active { transform:scale(0.98); }
+.btn-prev { background:#f0f0f0; color:#666; }
+.btn-next { background:linear-gradient(135deg, #FF6600, #FF8833); color:#fff; }
+.btn-next:disabled { background:#ccc; }
+
+.loading-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.95); z-index:200; display:none; align-items:center; justify-content:center; flex-direction:column; }
+.loading-overlay.show { display:flex; }
+.loading-spinner { width:48px; height:48px; border:4px solid #e8e8e8; border-top-color:#FF6600; border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-text { margin-top:14px; font-size:14px; color:#666; }
+
+.start-page { padding:28px 20px; text-align:center; }
+.start-page .logo-icon { font-size:60px; margin-bottom:14px; }
+.start-page h2 { font-size:21px; font-weight:700; color:#1A3A6B; margin-bottom:8px; line-height:1.4; }
+.start-page .tagline { font-size:14px; color:#666; margin-bottom:28px; line-height:1.7; }
+.start-page .features { text-align:left; margin:0 auto 28px; max-width:290px; }
+.start-page .feat-item { display:flex; align-items:center; padding:9px 0; font-size:13px; color:#555; }
+.start-page .feat-item .feat-icon { margin-right:9px; font-size:16px; }
+.start-page .privacy-line { font-size:11px; color:#aaa; margin-bottom:20px; display:flex; align-items:center; justify-content:center; gap:4px; }
+.btn-start { display:inline-block; padding:15px 55px; background:linear-gradient(135deg, #FF6600, #FF8833); color:#fff; border:none; border-radius:28px; font-size:17px; font-weight:700; cursor:pointer; box-shadow:0 4px 15px rgba(255,102,0,0.3); }
+.btn-start:disabled { background:#ccc; box-shadow:none; }
+.btn-start:active { transform:scale(0.97); }
+
+/* Report */
+.report { display:none; animation: fadeIn 0.5s ease; }
+.report.active { display:block; }
+.report-header { background:linear-gradient(135deg, #1A3A6B, #2D5AA0); color:#fff; padding:22px 20px; text-align:center; }
+.report-header .brand-tag { font-size:11px; letter-spacing:1px; opacity:0.8; margin-bottom:6px; }
+.report-header h2 { font-size:19px; margin-bottom:4px; }
+.report-header .date { font-size:12px; opacity:0.7; }
+.report-header .intent-tag { display:inline-block; margin-top:10px; padding:4px 12px; background:rgba(255,255,255,0.2); border-radius:12px; font-size:11px; font-weight:500; }
+
+.score-section { background:#fff; margin:16px; border-radius:14px; padding:24px; text-align:center; box-shadow:0 2px 12px rgba(0,0,0,0.08); }
+.score-circle { width:130px; height:130px; border-radius:50%; margin:0 auto 14px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:7px solid; }
+.score-circle.red { border-color:#E8864A; color:#C8641A; }
+.score-circle.yellow { border-color:#D4A017; color:#B08A00; }
+.score-circle.green { border-color:#52C41A; color:#3A8A12; }
+.score-num { font-size:40px; font-weight:800; line-height:1; }
+.score-label { font-size:11px; margin-top:4px; opacity:0.8; }
+.score-desc { font-size:14px; color:#555; line-height:1.6; margin-top:6px; }
+.intent-badge { display:inline-block; margin-top:12px; padding:6px 14px; border-radius:16px; font-size:12px; font-weight:600; }
+.intent-badge.high { background:#FFF3E0; color:#E8864A; }
+.intent-badge.medium { background:#E8F8E8; color:#3A8A12; }
+.intent-badge.low { background:#EEF6FF; color:#1A3A6B; }
+
+.report-section { background:#fff; margin:0 16px 14px; border-radius:14px; padding:18px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.report-section h3 { font-size:15px; font-weight:700; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #f0f0f0; display:flex; align-items:center; }
+.report-section h3 .icon { margin-right:6px; }
+
+.gap-item { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid #f5f5f5; }
+.gap-item:last-child { border-bottom:none; }
+.gap-item .gap-name { font-size:13px; }
+.gap-item .gap-status { font-size:11px; padding:3px 10px; border-radius:12px; }
+.gap-status.has { background:#E8F8E8; color:#3A8A12; }
+.gap-status.miss { background:#FFF3E0; color:#C8641A; }
+.gap-status.later { background:#EEF6FF; color:#1A3A6B; }
+
+.plan-item { display:flex; align-items:flex-start; padding:10px 0; border-bottom:1px solid #f5f5f5; }
+.plan-item:last-child { border-bottom:none; }
+.plan-item .plan-priority { width:22px; height:22px; border-radius:50%; background:#FF6600; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-right:10px; flex-shrink:0; margin-top:2px; }
+.plan-item .plan-info { flex:1; }
+.plan-item .plan-name { font-size:13px; font-weight:600; }
+.plan-item .plan-detail { font-size:11px; color:#888; margin-top:2px; line-height:1.5; }
+.plan-item .plan-reason { font-size:11px; color:#1A3A6B; margin-top:2px; }
+
+.category-item { display:flex; align-items:flex-start; padding:12px; background:linear-gradient(135deg, #F0F7FF, #EBF4FF); border-radius:10px; margin-bottom:8px; }
+.category-item:last-child { margin-bottom:0; }
+.category-item .cat-icon { font-size:20px; margin-right:10px; margin-top:2px; }
+.category-item .cat-info { flex:1; }
+.category-item .cat-name { font-size:14px; font-weight:600; color:#1A3A6B; }
+.category-item .cat-desc { font-size:11px; color:#666; margin-top:3px; line-height:1.5; }
+
+.summary-box { background:linear-gradient(135deg, #F0F7FF, #EBF4FF); border-radius:10px; padding:14px; margin-top:6px; border-left:4px solid #1A3A6B; }
+.summary-box p { font-size:13px; line-height:1.7; color:#333; }
+
+/* Policy custody hook */
+.custody-hook { background:linear-gradient(135deg, #FFF9E6, #FFF3CC); border-radius:12px; padding:16px; margin:0 16px 14px; border-left:4px solid #FFB800; }
+.custody-hook .hook-icon { font-size:24px; margin-bottom:8px; }
+.custody-hook .hook-title { font-size:15px; font-weight:700; color:#B8860B; margin-bottom:6px; }
+.custody-hook .hook-desc { font-size:12px; color:#666; line-height:1.6; margin-bottom:10px; }
+.custody-hook .hook-btn { display:inline-block; padding:10px 18px; background:#FFB800; color:#fff; border-radius:8px; font-size:13px; font-weight:600; }
+
+/* SOP script for agent */
+.sop-section { background:#f8f9fa; border-radius:12px; padding:16px; margin:0 16px 14px; border:1px solid #e8e8e8; }
+.sop-section .sop-title { font-size:13px; font-weight:600; color:#666; margin-bottom:12px; display:flex; align-items:center; }
+.sop-section .sop-title .sop-icon { margin-right:6px; }
+.sop-script { background:#fff; border-radius:8px; padding:14px; margin-bottom:10px; border-left:3px solid #FF6600; }
+.sop-script .script-label { font-size:11px; color:#999; margin-bottom:6px; font-weight:600; }
+.sop-script .script-text { font-size:12px; color:#555; line-height:1.7; }
+
+.report-footer { text-align:center; padding:18px; font-size:11px; color:#bbb; line-height:1.6; }
+.report-footer .brand-tag-inline { color:#1A3A6B; font-weight:600; }
+
+.save-bar { position:fixed; bottom:0; left:0; right:0; background:#fff; padding:12px 16px; box-shadow:0 -2px 10px rgba(0,0,0,0.08); z-index:100; }
+.btn-save { width:100%; padding:14px; border:none; border-radius:10px; font-size:16px; font-weight:600; cursor:pointer; background:linear-gradient(135deg, #FF6600, #FF8833); color:#fff; }
+
+.poster-bar { background:#fff; padding:10px 16px; box-shadow:0 -2px 10px rgba(0,0,0,0.06); z-index:100; }
+.btn-poster { width:100%; padding:12px; border:2px solid #1A3A6B; border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; background:#fff; color:#1A3A6B; margin-bottom:8px; }
+.btn-poster:active { background:#EEF6FF; }
+.btn-save { margin-bottom:0; }
+
+.image-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.92); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+.image-overlay.show { display:flex; }
+.image-overlay img { max-width:100%; max-height:70vh; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+.overlay-hint { color:#fff; font-size:14px; margin-bottom:12px; text-align:center; }
+.overlay-btn { margin-top:16px; padding:11px 36px; background:#fff; border:none; border-radius:24px; font-size:14px; font-weight:600; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="stage-toast" id="stageToast"></div>
+
+<!-- Start Page -->
+<div id="startPage">
+<div class="header">
+  <div class="brand">🏆 家庭保障智能分析</div>
+  <h1>家庭保障智能分析</h1>
+  <p>免费梳理全家保障，3分钟出参考方案</p>
+</div>
+<div class="start-page">
+  <div class="logo-icon">🏥</div>
+  <h2>帮您免费梳理<br>全家现有保障</h2>
+  <p class="tagline">结合您的家庭情况，给到合适的保障参考建议<br>全程匿名，数据仅用于本次分析</p>
+  <div class="features">
+    <div class="feat-item"><span class="feat-icon">⏱️</span>仅需3分钟</div>
+    <div class="feat-item"><span class="feat-icon">🔒</span>全程匿名，信息不外传</div>
+    <div class="feat-item"><span class="feat-icon">📊</span>自动生成保障参考报告</div>
+    <div class="feat-item"><span class="feat-icon">💡</span>专业建议，可供参考</div>
+  </div>
+
+  <div class="compliance-box" style="text-align:left; margin:0 auto; max-width:320px;">
+    <label>
+      <input type="checkbox" class="ck-input" id="agreeCheck">
+      <span class="ck-text">我已阅读并同意<a href="javascript:void(0)" onclick="showPrivacy()">《个人信息保护及隐私授权》</a>，授权专业顾问基于本次信息提供保障分析服务。</span>
+    </label>
+  </div>
+
+  <div class="privacy-line" style="margin-top:16px;"><span>🔒</span> 数据严格保密 · 仅用于本次分析</div>
+  <button class="btn-start" id="btnStart" onclick="startTest()" disabled>开始免费分析</button>
+</div>
+</div>
+
+<!-- Test Steps -->
+<div id="testArea" style="display:none">
+<div class="header">
+  <div class="brand">🏆 家庭保障智能分析</div>
+  <h1>家庭保障智能分析</h1>
+</div>
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="progress-text" id="progressText">已完成 0%</div>
+</div>
+
+<div class="steps-container">
+
+  <!-- Step 1: Basic Info -->
+  <div class="step active" id="step1">
+    <div class="q-card">
+      <div class="q-title"><span class="q-num">1</span>您的年龄段</div>
+      <div class="options" data-field="age">
+        <div class="option-btn" onclick="selectOne(this,'age','25-30岁')"><span class="check-icon">✓</span>25-30岁</div>
+        <div class="option-btn" onclick="selectOne(this,'age','31-35岁')"><span class="check-icon">✓</span>31-35岁</div>
+        <div class="option-btn" onclick="selectOne(this,'age','36-40岁')"><span class="check-icon">✓</span>36-40岁</div>
+        <div class="option-btn" onclick="selectOne(this,'age','41-45岁')"><span class="check-icon">✓</span>41-45岁</div>
+        <div class="option-btn" onclick="selectOne(this,'age','46-50岁')"><span class="check-icon">✓</span>46-50岁</div>
+        <div class="option-btn" onclick="selectOne(this,'age','50岁以上')"><span class="check-icon">✓</span>50岁以上</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-title"><span class="q-num">2</span>您的家庭结构</div>
+      <p class="q-subtitle">帮您针对性地分析适合的保障方向</p>
+      <div class="options" data-field="familyType">
+        <div class="option-btn" onclick="selectOne(this,'familyType','单身/二人世界')"><span class="check-icon">✓</span>单身 / 二人世界</div>
+        <div class="option-btn" onclick="selectOne(this,'familyType','育儿家庭')"><span class="check-icon">✓</span>育儿家庭（孩子未满18岁）</div>
+        <div class="option-btn" onclick="selectOne(this,'familyType','子女独立')"><span class="check-icon">✓</span>子女已独立</div>
+        <div class="option-btn" onclick="selectOne(this,'familyType','需赡养老人')"><span class="check-icon">✓</span>上有老下有小（需赡养老人）</div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-title"><span class="q-num">3</span>家庭日常收支档位</div>
+      <p class="q-subtitle">仅用于测算适配的保障预算，数据严格保密</p>
+      <div class="options" data-field="income">
+        <div class="option-btn" onclick="selectOne(this,'income','10万以下')"><span class="check-icon">✓</span>普通家庭（10万以下）</div>
+        <div class="option-btn" onclick="selectOne(this,'income','10-20万')"><span class="check-icon">✓</span>小有盈余（10-20万）</div>
+        <div class="option-btn" onclick="selectOne(this,'income','20-50万')"><span class="check-icon">✓</span>经济宽裕（20-50万）</div>
+        <div class="option-btn" onclick="selectOne(this,'income','50万以上')"><span class="check-icon">✓</span>富裕家庭（50万以上）</div>
+      </div>
+    </div>
+
+    <div class="q-card" id="loanCard">
+      <div class="q-title"><span class="q-num">4</span>家庭每月固定支出</div>
+      <p class="q-subtitle">有长期贷款可优先规划债务保障，无则跳过</p>
+      <div class="options" data-field="loan">
+        <div class="option-btn" onclick="selectOne(this,'loan','无')"><span class="check-icon">✓</span>暂无长期贷款压力</div>
+        <div class="option-btn" onclick="selectOne(this,'loan','5000以内')"><span class="check-icon">✓</span>月供5000以内</div>
+        <div class="option-btn" onclick="selectOne(this,'loan','5000-1万')"><span class="check-icon">✓</span>月供5000-1万</div>
+        <div class="option-btn" onclick="selectOne(this,'loan','1万以上')"><span class="check-icon">✓</span>月供1万以上</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Existing Coverage -->
+  <div class="step" id="step2">
+    <div class="q-card">
+      <div class="q-title"><span class="q-num">1</span>您和家人目前有哪些保障？</div>
+      <p class="multi-hint">简单勾选即可，不用精准回忆保单细节</p>
+
+      <div class="member-section">
+        <div class="member-label"><span class="member-icon">👤</span>我自己</div>
+        <div class="member-checks">
+          <div class="check-option" onclick="toggleMemberCheck(this,'self_social')"><div class="ck-box"></div><div class="ck-text">国家基础医保（职工/居民医保）</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'self_medical')"><div class="ck-box"></div><div class="ck-text">大额住院报销类保障</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'self_critical')"><div class="ck-box"></div><div class="ck-text">大病一次性补偿保障</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'self_accident')"><div class="ck-box"></div><div class="ck-text">磕碰、意外受伤保障</div></div>
+        </div>
+      </div>
+
+      <div class="member-section" id="spouseSection" style="display:none">
+        <div class="member-label"><span class="member-icon">👫</span>我的配偶</div>
+        <div class="member-checks">
+          <div class="check-option" onclick="toggleMemberCheck(this,'spouse_social')"><div class="ck-box"></div><div class="ck-text">国家基础医保</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'spouse_medical')"><div class="ck-box"></div><div class="ck-text">大额住院报销类保障</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'spouse_critical')"><div class="ck-box"></div><div class="ck-text">大病一次性补偿保障</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'spouse_accident')"><div class="ck-box"></div><div class="ck-text">磕碰、意外受伤保障</div></div>
+        </div>
+      </div>
+
+      <div class="member-section" id="childSection" style="display:none">
+        <div class="member-label"><span class="member-icon">👶</span>我的孩子</div>
+        <div class="member-checks">
+          <div class="check-option" onclick="toggleMemberCheck(this,'child_social')"><div class="ck-box"></div><div class="ck-text">少儿医保 / 国家基础医保</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'child_medical')"><div class="ck-box"></div><div class="ck-text">大额住院报销类保障</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'child_critical')"><div class="ck-box"></div><div class="ck-text">大病一次性补偿保障</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'child_accident')"><div class="ck-box"></div><div class="ck-text">磕碰、意外受伤保障</div></div>
+        </div>
+      </div>
+
+      <div class="member-section" id="parentSection" style="display:none">
+        <div class="member-label"><span class="member-icon">👴</span>我的父母</div>
+        <div class="member-checks">
+          <div class="check-option" onclick="toggleMemberCheck(this,'parent_social')"><div class="ck-box"></div><div class="ck-text">国家基础医保 / 新农合</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'parent_medical')"><div class="ck-box"></div><div class="ck-text">大额住院报销类保障</div></div>
+          <div class="check-option" onclick="toggleMemberCheck(this,'parent_accident')"><div class="ck-box"></div><div class="ck-text">磕碰、意外受伤保障</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Worries & Goals -->
+  <div class="step" id="step3">
+    <div class="q-card">
+      <div class="q-title"><span class="q-num">1</span>家庭最想优先守护的方向</div>
+      <p class="multi-hint">可多选，选最想守护的</p>
+      <div id="worryOptions">
+        <div class="top3-option" onclick="toggleTop3(this,0)">
+          <div class="t3-circle"></div>
+          <div class="t3-content">
+            <div class="t3-title">家人看病费用有保障</div>
+            <div class="t3-desc">不怕大病医疗费拖累家庭</div>
+          </div>
+        </div>
+        <div class="top3-option" onclick="toggleTop3(this,1)">
+          <div class="t3-circle"></div>
+          <div class="t3-content">
+            <div class="t3-title">孩子教育、未来有准备</div>
+            <div class="t3-desc">提前给孩子存一笔，确定的未来</div>
+          </div>
+        </div>
+        <div class="top3-option" onclick="toggleTop3(this,2)">
+          <div class="t3-circle"></div>
+          <div class="t3-content">
+            <div class="t3-title">安稳养老，晚年生活无忧</div>
+            <div class="t3-desc">退休后有稳定收入，品质生活</div>
+          </div>
+        </div>
+        <div class="top3-option" onclick="toggleTop3(this,3)">
+          <div class="t3-circle"></div>
+          <div class="t3-content">
+            <div class="t3-title">家庭债务（房贷等）无压力</div>
+            <div class="t3-desc">不管发生什么，房子稳稳的</div>
+          </div>
+        </div>
+        <div class="top3-option" onclick="toggleTop3(this,4)">
+          <div class="t3-circle"></div>
+          <div class="t3-content">
+            <div class="t3-title">闲置资金稳健打理</div>
+            <div class="t3-desc">长期稳稳增值，不操心</div>
+          </div>
+        </div>
+        <div class="top3-option" onclick="toggleTop3(this,5)">
+          <div class="t3-circle"></div>
+          <div class="t3-content">
+            <div class="t3-title">家庭经济支柱有兜底</div>
+            <div class="t3-desc">不管发生什么，家人生活有保障</div>
+          </div>
+        </div>
+        <div class="top3-option" onclick="toggleTop3(this,6)">
+          <div class="t3-circle"></div>
+          <div class="t3-content">
+            <div class="t3-title">家人意外受伤有保障</div>
+            <div class="t3-desc">磕碰、摔伤等小意外也不担心</div>
+          </div>
+        </div>
+      </div>
+      <p class="top3-hint" id="top3Hint">已选 0 项（可多选）</p>
+    </div>
+
+    <!-- Voluntary contact -->
+    <div class="voluntary-section">
+      <div class="vol-title">📩 自愿填写（方便接收完整分析报告）</div>
+      <div class="vol-hint">以下均为选填，不填写也能查看完整报告</div>
+      <div class="input-group">
+        <label>称呼（选填）</label>
+        <input type="text" id="contactName" placeholder="怎么称呼您">
+      </div>
+      <div class="input-group">
+        <label>手机号（选填）</label>
+        <input type="tel" id="contactPhone" placeholder="如需接收电子版报告可填写">
+      </div>
+      <div class="q-title" style="margin-top:4px;margin-bottom:6px;font-size:13px;">是否希望顾问为您解读报告？</div>
+      <div class="contact-choice">
+        <div class="choice-btn" onclick="selectContact(this,true)">👍 想的，简单了解一下</div>
+        <div class="choice-btn" onclick="selectContact(this,false)">🙂 先看报告，暂不需要</div>
+      </div>
+    </div>
+
+    <!-- No-pressure exit -->
+    <div class="skip-section">
+      <div class="skip-hint">💡 不想填写联系方式？也没问题</div>
+      <button class="skip-btn" onclick="skipContact()">仅查看报告，不留联系方式</button>
+      <div class="skip-note">点击后同样可以查看完整报告，截图即可保存</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-bar" id="bottomBar" style="display:none;">
+  <button class="btn btn-prev" id="btnPrev" onclick="prevStep()" style="display:none">上一步</button>
+  <button class="btn btn-next" id="btnNext" onclick="nextStep()">下一步</button>
+</div>
+</div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-spinner"></div>
+  <p class="loading-text">正在为您梳理家庭保障方案，请稍候...</p>
+</div>
+
+<!-- Report -->
+<div id="reportArea" style="display:none"></div>
+
+<!-- Image overlay -->
+<div class="image-overlay" id="imageOverlay">
+  <p class="overlay-hint" id="overlayHint">👇 长按保存图片，可分享给家人</p>
+  <img id="overlayImg" src="" alt="">
+  <button class="overlay-btn" onclick="closeOverlay()">✕ 关闭</button>
+</div>
+
+<script>
+// Data
+const data = {
+  age:'', familyType:'', income:'', loan:'',
+  self_social:false, self_medical:false, self_critical:false, self_accident:false,
+  spouse_social:false, spouse_medical:false, spouse_critical:false, spouse_accident:false,
+  child_social:false, child_medical:false, child_critical:false, child_accident:false,
+  parent_social:false, parent_medical:false, parent_accident:false,
+  worries:[], contactName:'', contactPhone:'', wantContact:null, skippedContact:false
+};
+
+let currentStep = 1;
+const totalSteps = 3;
+
+// Compliance checkbox
+document.getElementById('agreeCheck').addEventListener('change', function() {
+  document.getElementById('btnStart').disabled = !this.checked;
+});
+
+function showPrivacy() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:14px;padding:24px;max-height:70vh;overflow-y:auto;';
+  box.innerHTML = '<h3 style="font-size:16px;color:#1A3A6B;margin-bottom:12px;">《个人信息保护及隐私授权》</h3>' +
+    '<p style="font-size:13px;color:#555;line-height:1.8;margin-bottom:12px;">' +
+    '<b>1. 信息使用目的：</b>您在此页面填写的信息仅用于本次"家庭保障智能分析"，由专业顾问为您提供保障规划参考，不用于其他任何目的。<br><br>' +
+    '<b>2. 信息保密承诺：</b>您的个人信息不会被出售、转让或提供给任何第三方。我们严格遵守《个人信息保护法》，采取技术和管理措施保护您的信息安全。<br><br>' +
+    '<b>3. 自愿原则：</b>您可随时退出本次分析，所有填写内容均可匿名参与。<br><br>' +
+    '<b>4. 顾问服务：</b>如您选择"希望顾问解读"，即表示您授权我们安排专业顾问与您联系，提供一对一的保障规划咨询。' +
+    '</p>';
+  const btn = document.createElement('button');
+  btn.textContent = '我已知悉';
+  btn.style.cssText = 'width:100%;padding:12px;background:#FF6600;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;';
+  btn.onclick = () => document.body.removeChild(overlay);
+  box.appendChild(btn);
+  overlay.onclick = (e) => { if(e.target===overlay) document.body.removeChild(overlay); };
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+function showToast(msg, duration) {
+  duration = duration || 2500;
+  const toast = document.getElementById('stageToast');
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-10px)';
+  }, duration);
+}
+
+function startTest() {
+  document.getElementById('startPage').style.display = 'none';
+  document.getElementById('testArea').style.display = 'block';
+  document.getElementById('bottomBar').style.display = 'flex';
+  currentStep = 1;
+  document.getElementById('step1').classList.add('active');
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round(((currentStep - 1) / totalSteps) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `已完成 ${pct}%`;
+  document.getElementById('btnPrev').style.display = currentStep > 1 ? 'block' : 'none';
+  document.getElementById('btnNext').textContent = currentStep === totalSteps ? '生成报告' : '下一步';
+}
+
+function selectOne(el, field, value) {
+  data[field] = value;
+  el.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+
+  if (field === 'familyType') {
+    const msgs = {
+      '单身/二人世界': '🎉 已为您锁定适合的保障框架',
+      '育儿家庭': '👶 已为您锁定育儿家庭保障方案',
+      '子女独立': '🏠 已为您锁定成熟家庭保障框架',
+      '需赡养老人': '👨‍👩‍👧 已为您锁定上有老下有小保障框架'
+    };
+    showToast(msgs[value] || '✓ 已记录');
+  }
+  if (field === 'income') showToast('💡 已记录，正在为您匹配预算方案');
+  if (field === 'loan') showToast('✓ 已记录，债务保障已纳入分析');
+}
+
+function toggleMemberCheck(el, field) {
+  data[field] = !data[field];
+  el.classList.toggle('checked', data[field]);
+  const checked = el.classList.contains('checked');
+  if (checked) {
+    const msgs = {
+      self_social:'✅ 您已有国家基础医保', self_medical:'🏥 大额住院保障已记录',
+      self_critical:'💪 大病保障已记录', self_accident:'🩹 意外保障已记录',
+      spouse_social:'✅ 配偶已有基础医保', spouse_medical:'🏥 配偶住院保障已记录',
+      spouse_critical:'💪 配偶大病保障已记录', spouse_accident:'🩹 配偶意外保障已记录',
+      child_social:'✅ 孩子已有少儿医保', child_medical:'🏥 孩子住院保障已记录',
+      child_critical:'💪 孩子大病保障已记录', child_accident:'🩹 孩子意外保障已记录',
+      parent_social:'✅ 父母已有基础医保', parent_medical:'🏥 父母住院保障已记录',
+      parent_accident:'🩹 父母意外保障已记录'
+    };
+    showToast(msgs[field] || '✓ 已记录');
+  }
+}
+
+const worryLabels = [
+  '家人看病费用有保障','孩子教育未来有准备','安稳养老晚年无忧',
+  '家庭债务无压力','闲置资金稳健打理','家庭经济支柱有兜底','家人意外受伤有保障'
+];
+const worryFeedback = [
+  '🏥 已记录，看病费用保障纳入重点',
+  '📚 已记录，教育金规划已纳入',
+  '🏖️ 已记录，养老规划已纳入',
+  '🏠 已记录，债务保障已纳入',
+  '💰 已记录，稳健打理已纳入',
+  '🛡️ 已记录，家庭支柱保障已纳入',
+  '🩹 已记录，意外保障已纳入'
+];
+
+function toggleTop3(el, idx) {
+  const pos = data.worries.indexOf(idx);
+  if (pos >= 0) {
+    data.worries.splice(pos, 1);
+    el.classList.remove('selected');
+  } else {
+    data.worries.push(idx);
+    el.classList.add('selected');
+    showToast(worryFeedback[idx] || '✓ 已记录');
+  }
+  document.querySelectorAll('#worryOptions .top3-option').forEach(opt => {
+    opt.querySelector('.t3-circle').textContent = '';
+    opt.querySelector('.t3-circle').classList.remove('filled');
+  });
+  data.worries.forEach((wIdx, i) => {
+    const opts = document.querySelectorAll('#worryOptions .top3-option');
+    if (opts[wIdx]) {
+      opts[wIdx].querySelector('.t3-circle').textContent = i + 1;
+      opts[wIdx].querySelector('.t3-circle').classList.add('filled');
+    }
+  });
+  document.getElementById('top3Hint').textContent = `已选 ${data.worries.length} 项（可多选）`;
+}
+
+function selectContact(el, val) {
+  data.wantContact = val;
+  document.querySelectorAll('.contact-choice .choice-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function skipContact() {
+  data.skippedContact = true;
+  data.wantContact = false;
+  showToast('✓ 好的，直接看报告');
+  setTimeout(() => generateReport(), 500);
+}
+
+function nextStep() {
+  if (currentStep < totalSteps) {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep++;
+    document.getElementById('step' + currentStep).classList.add('active');
+
+    if (currentStep === 2) {
+      const ft = data.familyType;
+      document.getElementById('spouseSection').style.display = (ft === '单身/二人世界') ? 'none' : 'block';
+      document.getElementById('childSection').style.display = (ft === '育儿家庭') ? 'block' : 'none';
+      document.getElementById('parentSection').style.display = (ft === '需赡养老人' || ft === '育儿家庭') ? 'block' : 'none';
+
+      if (ft === '单身/二人世界') showToast('🎉 已自动跳过无关选项，专心为您分析', 2000);
+      if (ft === '育儿家庭') showToast('👶 已自动展示孩子保障选项', 2000);
+      if (ft === '需赡养老人') showToast('👨‍👩‍👧 已自动展示赡养保障选项', 2000);
+    }
+
+    updateProgress();
+    window.scrollTo(0, 0);
+  } else {
+    data.contactName = document.getElementById('contactName').value.trim();
+    data.contactPhone = document.getElementById('contactPhone').value.trim();
+    generateReport();
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep--;
+    document.getElementById('step' + currentStep).classList.add('active');
+    updateProgress();
+    window.scrollTo(0, 0);
+  }
+}
+
+function getIncomeNum() {
+  const map = {'10万以下':8, '10-20万':15, '20-50万':35, '50万以上':80};
+  return map[data.income] || 20;
+}
+
+function calcScore() {
+  let score = 100;
+  if (!data.self_social) score -= 15;
+  if (!data.self_medical) score -= 18;
+  if (!data.self_critical) score -= 15;
+  if (!data.self_accident) score -= 10;
+  if (data.familyType !== '单身/二人世界' && data.familyType !== '') {
+    if (!data.spouse_social) score -= 8;
+    if (!data.spouse_medical) score -= 10;
+    if (!data.spouse_critical) score -= 10;
+    if (!data.spouse_accident) score -= 6;
+  }
+  if (data.familyType === '育儿家庭') {
+    if (!data.child_social) score -= 5;
+    if (!data.child_medical) score -= 8;
+    if (!data.child_critical) score -= 8;
+    if (!data.child_accident) score -= 4;
+  }
+  if (data.familyType === '需赡养老人' || data.familyType === '育儿家庭') {
+    if (!data.parent_social) score -= 3;
+    if (!data.parent_medical) score -= 5;
+    if (!data.parent_accident) score -= 3;
+  }
+  if (data.loan !== '无' && !data.self_critical) score -= 5;
+  return Math.max(0, Math.min(100, score));
+}
+
+function getScoreLevel(score) {
+  if (score < 40) return {cls:'red', text:'当前保障偏基础，建议逐步补充完善，越早规划越轻松'};
+  if (score < 70) return {cls:'yellow', text:'保障基本覆盖，可根据家庭成长逐步补充，提升抗风险能力'};
+  return {cls:'green', text:'保障基础较好，继续保持的同时关注家庭变化及时调整'};
+}
+
+// Customer intent scoring model (A/B/C classification)
+function calcIntentScore() {
+  let score = 0;
+  let tags = [];
+  
+  // Has contact info
+  if (data.contactPhone) { score += 30; tags.push('已留资'); }
+  
+  // Loan + worry about critical illness
+  if (data.loan !== '无' && (data.worries.includes(0) || data.worries.includes(5))) {
+    score += 25;
+    tags.push('高保障需求');
+  }
+  
+  // Savings/pension needs
+  if (data.worries.includes(2) || data.worries.includes(4)) {
+    score += 20;
+    tags.push('储蓄/养老需求');
+  }
+  
+  // Child education
+  if (data.worries.includes(1)) {
+    score += 15;
+    tags.push('教育金需求');
+  }
+  
+  // Want consultant contact
+  if (data.wantContact === true) {
+    score += 15;
+    tags.push('主动邀约');
+  }
+  
+  // Low protection
+  const hasLowProtection = !data.self_critical && !data.self_medical;
+  if (hasLowProtection) { score += 10; tags.push('保障缺口明显'); }
+  
+  let level = 'C';
+  if (score >= 50) level = 'A';
+  else if (score >= 30) level = 'B';
+  
+  return { score, level, tags };
+}
+
+function generateReport() {
+  document.getElementById('testArea').style.display = 'none';
+  const loading = document.getElementById('loading');
+  loading.classList.add('show');
+
+  setTimeout(() => {
+    loading.classList.remove('show');
+    const score = calcScore();
+    const level = getScoreLevel(score);
+    const income = getIncomeNum();
+    const intent = calcIntentScore();
+
+    let coveredCount = 0, totalCount = 0;
+    ['self_social','self_medical','self_critical','self_accident'].forEach(k => { totalCount++; if(data[k]) coveredCount++; });
+    if (data.familyType !== '单身/二人世界' && data.familyType !== '') {
+      ['spouse_social','spouse_medical','spouse_critical','spouse_accident'].forEach(k => { totalCount++; if(data[k]) coveredCount++; });
+    }
+    if (data.familyType === '育儿家庭') {
+      ['child_social','child_medical','child_critical','child_accident'].forEach(k => { totalCount++; if(data[k]) coveredCount++; });
+    }
+    if (data.familyType === '需赡养老人' || data.familyType === '育儿家庭') {
+      ['parent_social','parent_medical','parent_accident'].forEach(k => { totalCount++; if(data[k]) coveredCount++; });
+    }
+    const coverageRate = totalCount > 0 ? Math.round(coveredCount / totalCount * 100) : 100;
+    let premiumLow = Math.round(income * 0.08 * 10000);
+    let premiumHigh = Math.round(income * 0.15 * 10000);
+
+    let recs = [];
+    if (!data.self_critical) recs.push({name:'本人大病补偿保障', amount:income*5+'万', premium:Math.round(income*5*0.03*10000)+'-'+Math.round(income*5*0.05*10000)+'元/年', reason:'覆盖大病治疗期间的收入损失'});
+    if (!data.self_medical) recs.push({name:'本人大额住院报销保障', amount:'300-600万', premium:'200-500元/年', reason:'覆盖大额住院医疗费，自费药也能报'});
+    if (!data.self_accident) recs.push({name:'本人意外受伤保障', amount:'50-100万', premium:'150-300元/年', reason:'磕碰、意外伤残都有保障，性价比高'});
+    if (data.familyType !== '单身/二人世界' && data.familyType !== '' && !data.spouse_critical) recs.push({name:'配偶大病补偿保障', amount:income*5+'万', premium:Math.round(income*5*0.03*10000)+'-'+Math.round(income*5*0.05*10000)+'元/年', reason:'家庭双支柱，配偶同样需要'});
+    if (data.familyType === '育儿家庭' && !data.child_critical) recs.push({name:'孩子大病补偿保障', amount:'30-50万', premium:'300-800元/年', reason:'孩子大病越早买越便宜，保障更久'});
+    if (data.familyType === '育儿家庭' && !data.child_medical) recs.push({name:'孩子大额住院报销保障', amount:'200-400万', premium:'100-300元/年', reason:'孩子活泼好动，住院医疗必备'});
+    if (data.familyType === '需赡养老人' && !data.parent_medical) recs.push({name:'父母大额住院报销保障', amount:'200-400万', premium:'500-2000元/年', reason:'老人住院概率高，建议优先补充'});
+
+    let categories = [];
+    if (data.familyType === '育儿家庭' && (data.worries.includes(1) || data.worries.includes(4))) {
+      categories.push({icon:'📚', name:'孩子教育规划方向', desc:'少儿年金类保障参考，适合为孩子提前储备教育金，越早准备越轻松'});
+    }
+    if ((data.age === '41-45岁' || data.age === '46-50岁' || data.age === '50岁以上') && (data.worries.includes(2) || data.worries.includes(4))) {
+      categories.push({icon:'🏖️', name:'养老规划方向', desc:'养老年金 / 增额终身寿参考，适合提前规划退休后的稳定收入来源'});
+    }
+    if (data.worries.includes(5) && data.loan !== '无') {
+      categories.push({icon:'🏠', name:'家庭债务保障方向', desc:'定期寿险类参考，覆盖房贷等长期债务，万一发生风险也不影响家人'});
+    }
+    if (data.worries.includes(4)) {
+      categories.push({icon:'💰', name:'中长期稳健规划方向', desc:'增额终身寿类参考，长期稳健增值，闲置资金打理好去处'});
+    }
+    if (data.worries.includes(0)) {
+      categories.push({icon:'🏥', name:'医疗费用保障方向', desc:'大额医疗险参考，补充社保不足，覆盖自费药和先进治疗'});
+    }
+
+    // Check if has existing protection (for policy custody hook)
+    const hasExistingProtection = data.self_critical || data.self_medical || data.spouse_critical || data.spouse_medical;
+
+    // Intent badge text
+    const intentBadgeText = {
+      'A': '⭐ 高意向客户',
+      'B': '✨ 中等意向', 
+      'C': '💎 潜在客户'
+    };
+    const intentBadgeClass = {
+      'A': 'high',
+      'B': 'medium',
+      'C': 'low'
+    };
+
+    let html = `<div id="reportContent">`;
+    html += `
+      <div class="report-header">
+        <div class="brand-tag">🏆 家庭保障智能分析 · 专业顾问提供</div>
+        <h2>📋 家庭保障参考报告</h2>
+        <p class="date">${new Date().toLocaleDateString('zh-CN')} ${data.contactName ? '· ' + data.contactName : '匿名用户'}</p>
+        ${data.contactPhone ? `<span class="intent-tag">${intentBadgeText[intent.level]} · 意向度${intent.score}分</span>` : ''}
+      </div>
+
+      <div class="score-section">
+        <div class="score-circle ${level.cls}">
+          <div class="score-num">${score}</div>
+          <div class="score-label">保障完善度</div>
+        </div>
+        <p class="score-desc">${level.text}</p>
+        ${data.contactPhone ? `<span class="intent-badge ${intentBadgeClass[intent.level]}">${intentBadgeText[intent.level]} · 标签：${intent.tags.join('、')}</span>` : ''}
+      </div>
+
+      <div class="report-section">
+        <h3><span class="icon">👤</span>本人保障现状</h3>
+        <div class="gap-item"><span class="gap-name">国家基础医保</span><span class="gap-status ${data.self_social?'has':'miss'}">${data.self_social?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">大额住院报销保障</span><span class="gap-status ${data.self_medical?'has':'miss'}">${data.self_medical?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">大病补偿保障</span><span class="gap-status ${data.self_critical?'has':'miss'}">${data.self_critical?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">意外受伤保障</span><span class="gap-status ${data.self_accident?'has':'miss'}">${data.self_accident?'✓ 已有':'✗ 建议补充'}</span></div>
+      </div>`;
+
+    if (data.familyType !== '单身/二人世界' && data.familyType !== '') {
+      html += `<div class="report-section"><h3><span class="icon">👫</span>配偶保障现状</h3>
+        <div class="gap-item"><span class="gap-name">国家基础医保</span><span class="gap-status ${data.spouse_social?'has':'miss'}">${data.spouse_social?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">大额住院报销保障</span><span class="gap-status ${data.spouse_medical?'has':'miss'}">${data.spouse_medical?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">大病补偿保障</span><span class="gap-status ${data.spouse_critical?'has':'miss'}">${data.spouse_critical?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">意外受伤保障</span><span class="gap-status ${data.spouse_accident?'has':'miss'}">${data.spouse_accident?'✓ 已有':'✗ 建议补充'}</span></div>
+      </div>`;
+    }
+    if (data.familyType === '育儿家庭') {
+      html += `<div class="report-section"><h3><span class="icon">👶</span>孩子保障现状</h3>
+        <div class="gap-item"><span class="gap-name">少儿医保 / 国家基础医保</span><span class="gap-status ${data.child_social?'has':'miss'}">${data.child_social?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">大额住院报销保障</span><span class="gap-status ${data.child_medical?'has':'miss'}">${data.child_medical?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">大病补偿保障</span><span class="gap-status ${data.child_critical?'has':'miss'}">${data.child_critical?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">意外受伤保障</span><span class="gap-status ${data.child_accident?'has':'miss'}">${data.child_accident?'✓ 已有':'✗ 建议补充'}</span></div>
+      </div>`;
+    }
+    if (data.familyType === '需赡养老人' || data.familyType === '育儿家庭') {
+      html += `<div class="report-section"><h3><span class="icon">👴</span>父母保障现状</h3>
+        <div class="gap-item"><span class="gap-name">国家基础医保 / 新农合</span><span class="gap-status ${data.parent_social?'has':'miss'}">${data.parent_social?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">大额住院报销保障</span><span class="gap-status ${data.parent_medical?'has':'miss'}">${data.parent_medical?'✓ 已有':'✗ 建议补充'}</span></div>
+        <div class="gap-item"><span class="gap-name">意外受伤保障</span><span class="gap-status ${data.parent_accident?'has':'miss'}">${data.parent_accident?'✓ 已有':'✗ 建议补充'}</span></div>
+      </div>`;
+    }
+
+    // Policy custody hook (if has existing protection)
+    if (hasExistingProtection) {
+      html += `
+      <div class="custody-hook">
+        <div class="hook-icon">📋</div>
+        <div class="hook-title">您已有基础保障，很棒！</div>
+        <div class="hook-desc">但不同保单可能存在责任重叠或缺口。建议使用<b>「家庭保单托管」</b>功能，免费为您梳理所有保单，查漏补缺。</div>
+        <span class="hook-btn">了解保单托管</span>
+      </div>`;
+    }
+
+    if (data.worries.length > 0) {
+      html += `<div class="report-section"><h3><span class="icon">💡</span>您最想守护的方向</h3>`;
+      data.worries.forEach(wIdx => {
+        html += `<div class="plan-item" style="padding:6px 0">
+          <div class="plan-priority" style="width:18px;height:18px;font-size:10px">✓</div>
+          <div class="plan-info">
+            <div class="plan-name" style="font-size:13px">${worryLabels[wIdx]}</div>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    if (recs.length > 0) {
+      html += `<div class="report-section"><h3><span class="icon">📋</span>可优先补充的方向（参考）</h3>`;
+      recs.slice(0, 5).forEach((r, i) => {
+        html += `<div class="plan-item">
+          <div class="plan-priority">${i+1}</div>
+          <div class="plan-info">
+            <div class="plan-name">${r.name} · 保额${r.amount}</div>
+            <div class="plan-detail">预估保费：${r.premium}</div>
+            <div class="plan-reason">${r.reason}</div>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    if (categories.length > 0) {
+      html += `<div class="report-section"><h3><span class="icon">🎁</span>根据您的情况，这些方向值得关注</h3>`;
+      categories.forEach(cat => {
+        html += `<div class="category-item">
+          <div class="cat-icon">${cat.icon}</div>
+          <div class="cat-info">
+            <div class="cat-name">${cat.name}</div>
+            <div class="cat-desc">${cat.desc}</div>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    }
+
+    html += `<div class="report-section">
+        <h3><span class="icon">💡</span>总结</h3>
+        <div class="summary-box"><p>根据您的家庭情况，目前保障覆盖率为${coverageRate}%。建议优先补充${recs.slice(0,2).map(r=>r.name).join('、') || '基础保障'}，预计年投入${premiumLow}-${premiumHigh}元，可有效提升家庭抗风险能力。具体方案可联系专业顾问一对一沟通。</p></div>
+      </div>`;
+
+    // SOP scripts section (shown when has contact)
+    if (data.contactPhone && data.wantContact === true) {
+      html += `
+      <div class="sop-section">
+        <div class="sop-title"><span class="sop-icon">💬</span>顾问沟通建议（仅供参考）</div>
+        <div class="sop-script">
+          <div class="script-label">开场破冰</div>
+          <div class="script-text">"您好，看到您刚做完家庭保障测评，报告里显示您家的抗风险体系已经覆盖了医疗和意外，这个意识非常棒！"</div>
+        </div>
+        <div class="sop-script">
+          <div class="script-label">指出机会点</div>
+          <div class="script-text">"不过报告里有个细节，您家目前${recs.length > 0 ? recs[0].name : '部分保障'}还有优化空间，这部分我帮您做个简单解读？"</div>
+        </div>
+        <div class="sop-script">
+          <div class="script-label">低压力邀约</div>
+          <div class="script-text">"不推销产品，就花10分钟帮您把报告里的数据翻译一下，告诉您现在哪方面是OK的，哪方面可以未来逐步完善，您看明天上午还是下午方便？"</div>
+        </div>
+      </div>`;
+    }
+
+    html += `
+      <div class="report-footer">
+        <span class="brand-tag-inline">🏆 家庭保障智能分析</span> 专业顾问提供<br>
+        本分析由专业顾问提供，方案仅供参考，不构成投保建议<br>
+        如需专业解读，请联系您的专业顾问
+      </div>
+    </div>`;
+
+    document.getElementById('reportArea').innerHTML = html;
+    document.getElementById('reportArea').style.display = 'block';
+
+    const saveBar = document.createElement('div');
+    saveBar.className = 'save-bar';
+    saveBar.innerHTML = `
+      <button class="btn-poster" onclick="generatePoster()">📤 生成专属分享海报</button>
+      <button class="btn-save" onclick="downloadReport()">📥 保存报告图片</button>`;
+    document.getElementById('reportArea').appendChild(saveBar);
+
+    window.scrollTo(0, 0);
+  }, 2000);
+}
+
+async function downloadReport() {
+  const btn = document.querySelector('.btn-save');
+  btn.textContent = '⏳ 正在生成...';
+  btn.disabled = true;
+  try {
+    const el = document.getElementById('reportContent');
+    const canvas = await html2canvas(el, {
+      scale: 2, useCORS: true, backgroundColor: '#f5f7fa',
+      logging: false, width: Math.min(el.offsetWidth, 370),
+      height: el.offsetHeight
+    });
+    document.getElementById('overlayImg').src = canvas.toDataURL('image/png');
+    document.getElementById('overlayHint').textContent = '👇 长按保存图片，可分享给家人';
+    document.getElementById('imageOverlay').classList.add('show');
+    btn.textContent = '📥 保存报告图片';
+    btn.disabled = false;
+  } catch(e) {
+    btn.textContent = '❌ 生成失败';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = '📥 保存报告图片'; }, 3000);
+  }
+}
+
+function generatePoster() {
+  const score = calcScore();
+  const level = getScoreLevel(score);
+  const scoreColor = level.cls === 'red' ? '#C8641A' : level.cls === 'yellow' ? '#B08A00' : '#3A8A12';
+  const intent = calcIntentScore();
+  const intentText = intent.level === 'A' ? '稳健家庭' : intent.level === 'B' ? '进取家庭' : '潜力家庭';
+
+  const posterHTML = `
+  <div id="posterContent" style="width:375px;padding:32px 24px;background:linear-gradient(135deg,#1A3A6B,#2D5AA0);font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#fff;min-height:580px;position:relative;">
+    <div style="text-align:center;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.2);">
+      <div style="font-size:11px;letter-spacing:2px;opacity:0.7;margin-bottom:8px;">🏆 家庭保障智能分析</div>
+      <h2 style="font-size:22px;font-weight:700;margin:0 0 4px;">家庭保障智能分析</h2>
+      <p style="font-size:12px;opacity:0.7;margin:0;">${new Date().toLocaleDateString('zh-CN')} ${data.contactName ? '· ' + data.contactName : ''}</p>
+    </div>
+
+    <div style="text-align:center;padding:24px 0;">
+      <div style="width:120px;height:120px;border-radius:50%;border:6px solid ${scoreColor};display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;font-size:36px;font-weight:800;color:${scoreColor};background:#fff;">
+        <span style="color:${scoreColor};font-size:36px;">${score}</span>
+        <span style="font-size:10px;color:#999;margin-top:2px;">分</span>
+      </div>
+      <p style="font-size:14px;margin-top:14px;opacity:0.9;">我的家庭保障力指数 · ${intentText}</p>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:12px;opacity:0.7;margin-bottom:10px;">🏠 家庭结构：${data.familyType || '未填写'}</div>
+      <div style="font-size:12px;opacity:0.7;margin-bottom:10px;">💰 收支档位：${data.income || '未填写'}</div>
+      <div style="font-size:12px;opacity:0.7;">🎯 守护方向：${data.worries.length > 0 ? data.worries.slice(0,2).map(w => worryLabels[w]).join('、') : '未填写'}</div>
+    </div>
+
+    <div style="background:#fff;border-radius:12px;padding:16px;color:#333;margin-bottom:20px;">
+      <p style="font-size:13px;line-height:1.7;margin:0;color:#555;">
+        ${data.contactName ? data.contactName + '的' : '我的'}家庭保障已升级！获得「${intentText}」认证。你也来测测？免费且不留电话。
+      </p>
+    </div>
+
+    <div style="text-align:center;">
+      <div style="font-size:12px;opacity:0.6;margin-bottom:8px;">—— 扫码体验 · 家庭保障智能分析 ——</div>
+      <div style="display:inline-block;background:#fff;padding:8px;border-radius:8px;">
+        <div style="width:80px;height:80px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:10px;color:#999;border-radius:4px;">企微二维码</div>
+      </div>
+      <p style="font-size:11px;opacity:0.5;margin-top:8px;">由专业顾问提供 · 方案仅供参考</p>
+    </div>
+  </div>`;
+
+  const oldPoster = document.getElementById('posterContent');
+  if (oldPoster) oldPoster.remove();
+  document.body.insertAdjacentHTML('beforeend', posterHTML);
+
+  setTimeout(async () => {
+    const btn = document.querySelector('.btn-poster');
+    btn.textContent = '⏳ 生成中...';
+    btn.disabled = true;
+    try {
+      const el = document.getElementById('posterContent');
+      const canvas = await html2canvas(el, {
+        scale: 3, useCORS: true, backgroundColor: '#1A3A6B',
+        logging: false, width: 375, height: 600
+      });
+      document.getElementById('overlayImg').src = canvas.toDataURL('image/png');
+      document.getElementById('overlayHint').textContent = '👇 长按保存海报，可发朋友圈分享给好友';
+      document.getElementById('imageOverlay').classList.add('show');
+    } catch(e) { console.error(e); }
+    btn.textContent = '📤 生成专属分享海报';
+    btn.disabled = false;
+  }, 300);
+}
+
+function closeOverlay() {
+  document.getElementById('imageOverlay').classList.remove('show');
+}
+</script>
+</body>
+</html>
